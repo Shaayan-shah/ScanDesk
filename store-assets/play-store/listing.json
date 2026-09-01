@@ -1,0 +1,7 @@
+{
+  "title": "ScanDesk \u2014 Private QR & Barcode",
+  "short_description": "Fast, private, offline-first QR & barcode scanner and generator.",
+  "full_description": "ScanDesk is a fast, secure, and completely private QR and barcode utility suite.\\n\\nFeatures:\\n- Live camera scanning with torch and camera switch\\n- Image & screenshot drag-and-drop scanner\\n- Smart parsing: Wi-Fi, Contacts, URLs, Products, SMS, Emails\\n- QR Code Studio with automated verification loop\\n- Continuous batch scanning with instant CSV/JSON export\\n- Local encrypted history storage with zero telemetry\\n- 100% offline operation without ads or trackers.",
+  "category": "PRODUCTIVITY",
+  "privacy_policy_url": "https://github.com/Shaayan-shah/scandesk/blob/main/PRIVACY_POLICY.md"
+}
