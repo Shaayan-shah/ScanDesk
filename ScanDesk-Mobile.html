@@ -1,36 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ScanDesk Mobile — Private QR & Barcode Suite</title>
+  <title>ScanDesk Mobile Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
-    body { background-color: #030712; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
-    .scan-laser {
-      animation: laser 2s ease-in-out infinite;
-    }
-    @keyframes laser {
-      0%, 100% { transform: translateY(0%); opacity: 0.9; }
-      50% { transform: translateY(220px); opacity: 0.3; }
-    }
+    body { background-color: #030712; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+    @keyframes sweep { 0%, 100% { transform: translateY(0%); opacity: 0.9; } 50% { transform: translateY(220px); opacity: 0.3; } }
+    .laser-line { animation: sweep 2s ease-in-out infinite; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between pb-16">
+<body class="min-h-screen flex flex-col justify-between pb-16 select-none">
 
   <!-- Header -->
-  <header class="sticky top-0 z-30 flex items-center justify-between border-b border-gray-800/80 bg-gray-950/90 backdrop-blur-md px-4 py-3">
+  <header class="sticky top-0 z-30 flex items-center justify-between border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md px-4 py-3">
     <div class="flex items-center gap-2.5">
-      <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold text-sm">
-        🔍
+      <div class="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold text-sm">
+        ⚡
       </div>
       <div>
         <h1 class="text-sm font-bold text-white leading-tight">ScanDesk Mobile</h1>
         <p class="text-[10px] text-emerald-400 font-medium">100% Offline & Private</p>
       </div>
     </div>
-    <span class="text-[11px] rounded-full bg-gray-900 border border-gray-800 px-2.5 py-1 text-gray-400">v1.0 Pro</span>
+    <button id="btn-quick-demo" class="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-xl font-semibold">
+      ✨ Demo Samples
+    </button>
   </header>
 
   <!-- Main Views Container -->
@@ -38,38 +35,38 @@
     
     <!-- TAB 1: Live Camera Scanner -->
     <div id="tab-scan" class="space-y-4">
-      <div class="relative w-full aspect-square rounded-3xl overflow-hidden bg-gray-900 border border-gray-800 shadow-2xl flex items-center justify-center">
+      <div class="relative w-full aspect-square rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl flex items-center justify-center">
         <video id="video-preview" playsinline autoplay muted class="w-full h-full object-cover"></video>
         
         <!-- Target Reticle -->
         <div class="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-          <div class="relative w-56 h-56 rounded-2xl border-2 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-            <div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-emerald-400 rounded-tl-lg"></div>
-            <div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-emerald-400 rounded-tr-lg"></div>
-            <div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-emerald-400 rounded-bl-lg"></div>
-            <div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-emerald-400 rounded-br-lg"></div>
-            <div class="w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent scan-laser"></div>
+          <div class="relative w-56 h-56 rounded-3xl border-2 border-emerald-500/50 shadow-[0_0_25px_rgba(16,185,129,0.2)]">
+            <div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-emerald-400 rounded-tl-xl"></div>
+            <div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-emerald-400 rounded-tr-xl"></div>
+            <div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-emerald-400 rounded-bl-xl"></div>
+            <div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-emerald-400 rounded-br-xl"></div>
+            <div class="w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent laser-line shadow-[0_0_8px_#22d3ee]"></div>
           </div>
         </div>
 
         <!-- Camera Controls -->
         <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center pointer-events-auto">
-          <button id="btn-flip-cam" class="rounded-full bg-gray-950/80 backdrop-blur-md px-3 py-1.5 text-xs text-gray-200 border border-gray-800">
-            🔄 Switch Camera
+          <button id="btn-flip-cam" class="rounded-full bg-slate-950/80 backdrop-blur-md px-3.5 py-1.5 text-xs text-slate-200 border border-slate-800">
+            🔄 Switch Lens
           </button>
-          <span class="text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-            ● Active
+          <span class="text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full">
+            ● Active Scanner
           </span>
         </div>
       </div>
 
       <!-- Quick Manual Upload -->
-      <div class="p-4 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-between">
+      <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between">
         <div>
-          <p class="text-xs font-semibold text-white">Scan from Photo / Gallery</p>
-          <p class="text-[11px] text-gray-400">Pick image file from your device</p>
+          <p class="text-xs font-bold text-white">Scan from Photo Gallery</p>
+          <p class="text-[10px] text-slate-400">Choose saved image or screenshot</p>
         </div>
-        <label class="cursor-pointer rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-gray-950 hover:bg-emerald-400">
+        <label class="cursor-pointer rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400">
           Pick Photo
           <input type="file" id="file-input" accept="image/*" class="hidden">
         </label>
@@ -78,20 +75,20 @@
 
     <!-- TAB 2: QR Generator -->
     <div id="tab-gen" class="hidden space-y-4">
-      <div class="p-5 rounded-3xl bg-gray-900 border border-gray-800 space-y-4">
-        <h3 class="text-sm font-bold text-white">Create Custom QR Code</h3>
+      <div class="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+        <h3 class="text-sm font-bold text-white">Instant QR Code Generator</h3>
         
         <div>
-          <label class="text-[11px] text-gray-400 block mb-1">Enter URL, Text, or Wi-Fi info:</label>
-          <textarea id="gen-input" rows="3" class="w-full rounded-xl bg-gray-950 border border-gray-800 p-3 text-xs text-white focus:outline-none focus:border-emerald-500" placeholder="https://example.com or text..."></textarea>
+          <label class="text-[11px] text-slate-400 block mb-1">Enter Website URL, Text, or Wi-Fi info:</label>
+          <textarea id="gen-input" rows="3" class="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 text-xs text-white focus:outline-none focus:border-emerald-500" placeholder="https://example.com or message..."></textarea>
         </div>
 
         <div class="flex justify-center p-4 bg-white rounded-2xl">
           <canvas id="qr-canvas" class="max-w-[200px] h-auto"></canvas>
         </div>
 
-        <button id="btn-download-qr" class="w-full py-2.5 rounded-xl bg-emerald-500 text-gray-950 font-bold text-xs hover:bg-emerald-400">
-          📥 Save QR Image to Gallery
+        <button id="btn-download-qr" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs hover:bg-emerald-400">
+          📥 Save QR Code to Phone Gallery
         </button>
       </div>
     </div>
@@ -99,11 +96,10 @@
     <!-- TAB 3: History -->
     <div id="tab-hist" class="hidden space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="text-sm font-bold text-white">Saved Scans</h3>
+        <h3 class="text-sm font-bold text-white">Local Saved History</h3>
         <button id="btn-clear-hist" class="text-xs text-rose-400 hover:underline">Clear All</button>
       </div>
       <div id="history-list" class="space-y-2 max-h-[450px] overflow-y-auto">
-        <!-- History items dynamically inserted -->
       </div>
     </div>
 
@@ -111,38 +107,63 @@
 
   <!-- Scan Result Popup Modal -->
   <div id="modal-result" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
-    <div class="w-full max-w-md rounded-3xl bg-gray-900 border border-gray-800 p-5 space-y-4 animate-in slide-in-from-bottom">
-      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+    <div class="w-full max-w-md rounded-3xl bg-slate-900 border border-slate-800 p-5 space-y-4 animate-in slide-in-from-bottom">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Scanned Successfully</span>
-        <button id="btn-close-modal" class="text-gray-400 text-lg">&times;</button>
+        <button id="btn-close-modal" class="text-slate-400 text-lg">&times;</button>
       </div>
       
-      <div class="p-3 bg-gray-950 rounded-xl border border-gray-800">
-        <p id="modal-content" class="text-xs font-mono text-gray-200 break-all"></p>
+      <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+        <p id="modal-content" class="text-xs font-mono text-slate-200 break-all"></p>
       </div>
 
       <div class="flex gap-2">
-        <button id="btn-modal-copy" class="flex-1 py-2.5 rounded-xl bg-gray-800 text-white text-xs font-semibold hover:bg-gray-700">
+        <button id="btn-modal-copy" class="flex-1 py-3 rounded-xl bg-slate-800 text-white text-xs font-semibold hover:bg-slate-700">
           📋 Copy Value
         </button>
-        <a id="btn-modal-open" href="#" target="_blank" class="flex-1 py-2.5 rounded-xl bg-emerald-500 text-gray-950 text-xs font-bold text-center hover:bg-emerald-400">
+        <a id="btn-modal-open" href="#" target="_blank" class="flex-1 py-3 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold text-center hover:bg-emerald-400">
           🌐 Open Link
         </a>
       </div>
     </div>
   </div>
 
+  <!-- Interactive Demo Samples Modal -->
+  <div id="modal-demo" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+    <div class="w-full max-w-md rounded-3xl bg-slate-900 border border-slate-800 p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">✨ Interactive Demo Samples</span>
+        <button id="btn-close-demo" class="text-slate-400 text-lg">&times;</button>
+      </div>
+      <p class="text-xs text-slate-400">Tap a sample to test decoding & actions:</p>
+      <div class="space-y-2">
+        <button onclick="pickDemo('WIFI:S:Cafe_Coffee_5G;T:WPA;P:FreshRoast2026;;')" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-left text-xs hover:border-cyan-400">
+          <p class="font-bold text-white">☕ Cafe Guest Wi-Fi</p>
+          <span class="text-[10px] text-slate-500">Wi-Fi Network Credentials</span>
+        </button>
+        <button onclick="pickDemo('BEGIN:VCARD\nVERSION:3.0\nFN:Shayan Shah\nTEL:+923001234567\nORG:DecodeLabs\nEND:VCARD')" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-left text-xs hover:border-cyan-400">
+          <p class="font-bold text-white">👤 Lead Engineer Contact Card</p>
+          <span class="text-[10px] text-slate-500">vCard Contact Card</span>
+        </button>
+        <button onclick="pickDemo('https://github.com/Shaayan-shah/ScanDesk')" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-left text-xs hover:border-cyan-400">
+          <p class="font-bold text-white">🌐 Official ScanDesk Repository</p>
+          <span class="text-[10px] text-slate-500">Safe Web URL</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Bottom Navigation Bar for Mobile -->
-  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-gray-950 border-t border-gray-800/80 px-6 py-2.5 flex justify-around">
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/80 px-6 py-2.5 flex justify-around">
     <button id="nav-scan" class="flex flex-col items-center gap-1 text-emerald-400 font-semibold text-[11px]">
       <span>📷</span>
       <span>Scanner</span>
     </button>
-    <button id="nav-gen" class="flex flex-col items-center gap-1 text-gray-400 text-[11px]">
+    <button id="nav-gen" class="flex flex-col items-center gap-1 text-slate-400 text-[11px]">
       <span>✨</span>
       <span>Generator</span>
     </button>
-    <button id="nav-hist" class="flex flex-col items-center gap-1 text-gray-400 text-[11px]">
+    <button id="nav-hist" class="flex flex-col items-center gap-1 text-slate-400 text-[11px]">
       <span>📜</span>
       <span>History</span>
     </button>
@@ -150,9 +171,8 @@
 
   <script>
     let currentFacing = 'environment';
-    let localHistory = JSON.parse(localStorage.getItem('scandesk_history') || '[]');
+    let localHistory = JSON.parse(localStorage.getItem('scandesk_history_mobile') || '[]');
 
-    // Tabs
     const navScan = document.getElementById('nav-scan');
     const navGen = document.getElementById('nav-gen');
     const navHist = document.getElementById('nav-hist');
@@ -164,9 +184,9 @@
       tabScan.classList.add('hidden');
       tabGen.classList.add('hidden');
       tabHist.classList.add('hidden');
-      navScan.className = 'flex flex-col items-center gap-1 text-gray-400 text-[11px]';
-      navGen.className = 'flex flex-col items-center gap-1 text-gray-400 text-[11px]';
-      navHist.className = 'flex flex-col items-center gap-1 text-gray-400 text-[11px]';
+      navScan.className = 'flex flex-col items-center gap-1 text-slate-400 text-[11px]';
+      navGen.className = 'flex flex-col items-center gap-1 text-slate-400 text-[11px]';
+      navHist.className = 'flex flex-col items-center gap-1 text-slate-400 text-[11px]';
 
       if (active === 'scan') {
         tabScan.classList.remove('hidden');
@@ -192,9 +212,7 @@
     let videoStream = null;
 
     async function startCamera() {
-      if (videoStream) {
-        videoStream.getTracks().forEach(t => t.stop());
-      }
+      if (videoStream) videoStream.getTracks().forEach(t => t.stop());
       try {
         videoStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: currentFacing }
@@ -227,14 +245,11 @@
       startCamera();
     };
 
-    // Modal & Actions
     function handleResult(val) {
       if (!val) return;
-      
-      // Save history
-      localHistory.unshift({ value: val, time: new Date().toLocaleString() });
+      localHistory.unshift({ value: val, time: new Date().toLocaleTimeString() });
       if (localHistory.length > 50) localHistory.pop();
-      localStorage.setItem('scandesk_history', JSON.stringify(localHistory));
+      localStorage.setItem('scandesk_history_mobile', JSON.stringify(localHistory));
 
       document.getElementById('modal-content').innerText = val;
       const openBtn = document.getElementById('btn-modal-open');
@@ -258,6 +273,14 @@
       alert('Copied to clipboard!');
     };
 
+    // Quick Demo
+    document.getElementById('btn-quick-demo').onclick = () => document.getElementById('modal-demo').classList.remove('hidden');
+    document.getElementById('btn-close-demo').onclick = () => document.getElementById('modal-demo').classList.add('hidden');
+    window.pickDemo = (val) => {
+      document.getElementById('modal-demo').classList.add('hidden');
+      handleResult(val);
+    };
+
     // Photo input
     document.getElementById('file-input').onchange = async (e) => {
       const file = e.target.files[0];
@@ -266,18 +289,15 @@
       if ('BarcodeDetector' in window) {
         const detector = new BarcodeDetector({ formats: ['qr_code', 'ean_13', 'code_128'] });
         const res = await detector.detect(bmp);
-        if (res.length > 0) {
-          handleResult(res[0].rawValue);
-        } else {
-          alert('No QR or Barcode found in this image.');
-        }
+        if (res.length > 0) handleResult(res[0].rawValue);
+        else alert('No QR or Barcode found in this photo.');
       }
     };
 
     // QR Generator
     const genInput = document.getElementById('gen-input');
     const qrCanvas = document.getElementById('qr-canvas');
-    genInput.value = 'https://github.com/Shaayan-shah';
+    genInput.value = 'https://github.com/Shaayan-shah/ScanDesk';
 
     function renderQR() {
       QRCode.toCanvas(qrCanvas, genInput.value || 'ScanDesk', { width: 200, margin: 2 });
@@ -295,24 +315,23 @@
     function renderHistory() {
       const container = document.getElementById('history-list');
       if (localHistory.length === 0) {
-        container.innerHTML = '<p class="text-xs text-gray-500 text-center py-6">No scans recorded yet.</p>';
+        container.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">No scans saved yet.</p>';
         return;
       }
       container.innerHTML = localHistory.map(item => `
-        <div class="p-3 rounded-xl bg-gray-900 border border-gray-800 text-xs">
-          <p class="font-mono text-gray-200 truncate">${item.value}</p>
-          <span class="text-[10px] text-gray-500">${item.time}</span>
+        <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs">
+          <p class="font-mono text-slate-200 truncate">${item.value}</p>
+          <span class="text-[10px] text-slate-500">${item.time}</span>
         </div>
       `).join('');
     }
 
     document.getElementById('btn-clear-hist').onclick = () => {
       localHistory = [];
-      localStorage.removeItem('scandesk_history');
+      localStorage.removeItem('scandesk_history_mobile');
       renderHistory();
     };
 
-    // Initial start
     startCamera();
   </script>
 </body>

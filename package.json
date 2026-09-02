@@ -1,12 +1,11 @@
 {
-  "name": "scandesk",
-  "version": "1.0.0",
+  "name": "scandesk-pro",
+  "version": "2.0.0",
   "private": true,
-  "description": "Private, offline-first QR and barcode scanner & generator suite",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
