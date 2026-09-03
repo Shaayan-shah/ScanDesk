@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Image, QrCode, ArrowRight, Check } from 'lucide-react';
+import { Camera, Image, QrCode, ArrowRight, Check, Layers, ShieldCheck } from 'lucide-react';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -13,26 +13,26 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
 
   const slides = [
     {
-      title: 'Real-Time Camera Scanner',
-      desc: 'Point your camera at any QR code or barcode to decode links, Wi-Fi networks, and contact cards in real-time.',
+      title: 'Smart Optical Scanner',
+      desc: 'Point your camera at any QR code, barcode, or URL for instant real-time decoding with flash & zoom support.',
       icon: Camera,
-      badge: 'Step 1 of 3',
-      color: 'from-emerald-500 to-teal-600'
+      badge: 'Feature 1 of 3',
+      color: 'from-emerald-500 to-teal-600',
     },
     {
-      title: 'Gallery & Screenshot Import',
-      desc: 'Have a code saved in your photos? Select any image from your device gallery to decode it instantly without printing.',
-      icon: Image,
-      badge: 'Step 2 of 3',
-      color: 'from-blue-500 to-indigo-600'
+      title: 'Continuous Batch Scanning',
+      desc: 'Switch to Batch mode to scan multiple items sequentially without closing the camera, then export directly to CSV.',
+      icon: Layers,
+      badge: 'Feature 2 of 3',
+      color: 'from-blue-500 to-indigo-600',
     },
     {
-      title: 'Instant QR Generator',
-      desc: 'Create custom QR codes for your Wi-Fi, personal contact card, website, or notes with 1-click image download.',
+      title: 'Pro QR Studio & Security',
+      desc: 'Design custom branded QR codes for Wi-Fi, Contacts, and WhatsApp with real-time URL security analysis.',
       icon: QrCode,
-      badge: 'Step 3 of 3',
-      color: 'from-violet-500 to-purple-600'
-    }
+      badge: 'Feature 3 of 3',
+      color: 'from-violet-500 to-purple-600',
+    },
   ];
 
   const current = slides[step];
@@ -50,7 +50,6 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
       <div className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100">
-        
         {/* Top Progress & Badge */}
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
@@ -86,12 +85,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
           onClick={handleNext}
           className="w-full flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 py-3.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition"
         >
-          <span>{step === slides.length - 1 ? 'Get Started' : 'Next Step'}</span>
+          <span>{step === slides.length - 1 ? 'Start Scanning' : 'Next'}</span>
           {step === slides.length - 1 ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
         </button>
-
       </div>
     </div>
   );
 };
-

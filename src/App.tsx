@@ -4,9 +4,10 @@ import { ScannerTab } from './components/ScannerTab';
 import { GeneratorTab } from './components/GeneratorTab';
 import { HistoryTab } from './components/HistoryTab';
 import { ResultModal } from './components/ResultModal';
-import { OnboardingModal } from './components/DemoModal';
+import { OnboardingModal } from './components/OnboardingModal';
 import { ScanResult } from './types';
 import { Camera, QrCode, History } from 'lucide-react';
+
 
 type Tab = 'scanner' | 'generator' | 'history';
 

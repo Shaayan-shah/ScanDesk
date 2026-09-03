@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ScanDesk — QR & Barcode Scanner</title>
+  <title>ScanDesk — Smart Optical Scanner & QR Studio</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,11 +30,11 @@
           <h1 class="text-sm font-bold text-slate-900 leading-tight">ScanDesk</h1>
           <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">Offline</span>
         </div>
-        <p class="text-[11px] text-slate-500 font-medium">QR & Barcode Utility</p>
+        <p class="text-[11px] text-slate-500 font-medium">Smart Optical & QR Suite</p>
       </div>
     </div>
     <button id="btn-guide" class="text-xs bg-slate-100 hover:bg-slate-200/80 text-slate-700 px-3 py-1.5 rounded-xl font-semibold transition">
-      💡 How to Use
+      💡 Guide
     </button>
   </header>
 
@@ -60,52 +60,67 @@
           </div>
         </div>
 
-        <!-- Camera Controls -->
+        <!-- Camera Top Toolbar -->
         <div class="absolute top-3 left-3 right-3 flex justify-between items-center pointer-events-auto">
-          <span class="rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs text-white font-semibold">
-            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span> Scanning
-          </span>
-          <button id="btn-flip-cam" class="rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs text-white hover:text-emerald-400 transition">
-            🔄 Switch Lens
-          </button>
+          <div class="flex items-center gap-1.5">
+            <span id="cam-status" class="rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs text-white font-semibold">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span> Live
+            </span>
+            <button id="btn-batch-toggle" class="rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs text-slate-200 font-bold hover:text-white transition">
+              Batch
+            </button>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button id="btn-flip-cam" class="rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs text-white hover:text-emerald-400 transition">
+              🔄 Switch
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Batch Info Bar (if active) -->
+      <div id="batch-banner" class="hidden items-center justify-between p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 shadow-xs">
+        <span class="text-xs font-bold text-emerald-900" id="batch-count-text">0 items collected</span>
+        <button id="btn-export-batch" class="text-xs bg-emerald-600 text-white px-3 py-1 rounded-xl font-bold shadow-xs">Export CSV</button>
       </div>
 
       <!-- Quick Actions (Photo Upload & Input) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <label class="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-500/50 cursor-pointer shadow-xs transition">
           <div class="flex items-center gap-3">
-            <div class="p-2 rounded-xl bg-emerald-50 text-emerald-700">
+            <div class="p-2 rounded-xl bg-emerald-50 text-emerald-700 font-bold">
               📁
             </div>
             <div>
               <p class="text-xs font-bold text-slate-900">Upload Photo</p>
-              <p class="text-[11px] text-slate-500">Pick from phone gallery</p>
+              <p class="text-[11px] text-slate-500">Pick from device gallery</p>
             </div>
           </div>
-          <span class="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">Select</span>
+          <span class="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">Browse</span>
           <input id="gallery-input" type="file" accept="image/*" class="hidden">
         </label>
 
         <div class="flex items-center gap-2 p-2 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-          <input id="manual-input" type="text" placeholder="Paste code text..." class="flex-1 rounded-xl bg-slate-50 px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none focus:bg-white border border-transparent focus:border-emerald-500">
+          <input id="manual-input" type="text" placeholder="Paste code payload..." class="flex-1 rounded-xl bg-slate-50 px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none focus:bg-white border border-transparent focus:border-emerald-500">
           <button id="btn-decode-text" class="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-3.5 py-2 text-xs font-bold text-white transition">Decode</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: QR Generator -->
+    <!-- TAB 2: QR Generator Studio Pro -->
     <div id="tab-gen" class="hidden space-y-4">
       <div class="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs space-y-3">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Create Custom QR Code</h2>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Design Branded QR Code</h2>
         
-        <div class="flex gap-2">
-          <button id="gen-mode-url" class="flex-1 py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300">Link</button>
-          <button id="gen-mode-wifi" class="flex-1 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 border border-slate-200">Wi-Fi</button>
+        <div class="grid grid-cols-4 gap-1.5">
+          <button id="gen-mode-url" class="py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300">Link</button>
+          <button id="gen-mode-wifi" class="py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 border border-slate-200">Wi-Fi</button>
+          <button id="gen-mode-vcard" class="py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 border border-slate-200">Contact</button>
+          <button id="gen-mode-text" class="py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 border border-slate-200">Text</button>
         </div>
 
         <div id="gen-url-form" class="space-y-1">
-          <label class="text-xs font-bold text-slate-700">Website URL</label>
+          <label class="text-xs font-bold text-slate-700">Target Web URL</label>
           <input id="qr-input-url" type="url" value="https://github.com/Shaayan-shah/ScanDesk" class="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500">
         </div>
 
@@ -120,12 +135,35 @@
           </div>
         </div>
 
+        <div id="gen-vcard-form" class="hidden space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <input id="qr-input-name" type="text" value="Shayan Shah" placeholder="Full Name" class="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2 text-xs text-slate-900">
+            <input id="qr-input-phone" type="text" value="+923001234567" placeholder="Phone" class="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2 text-xs text-slate-900">
+          </div>
+        </div>
+
+        <div id="gen-text-form" class="hidden space-y-1">
+          <label class="text-xs font-bold text-slate-700">Plain Message</label>
+          <textarea id="qr-input-text" rows="2" class="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-900">Welcome to ScanDesk Optical Suite</textarea>
+        </div>
+
+        <!-- Color Palette -->
+        <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+          <span class="text-xs font-bold text-slate-700">Color</span>
+          <div class="flex gap-1.5" id="color-palette">
+            <button class="w-5 h-5 rounded-full bg-[#0f172a] border-2 border-emerald-500" data-color="#0f172a"></button>
+            <button class="w-5 h-5 rounded-full bg-[#059669]" data-color="#059669"></button>
+            <button class="w-5 h-5 rounded-full bg-[#2563eb]" data-color="#2563eb"></button>
+            <button class="w-5 h-5 rounded-full bg-[#dc2626]" data-color="#dc2626"></button>
+          </div>
+        </div>
+
         <div class="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
           <canvas id="qr-result-canvas" class="rounded-xl shadow-xs"></canvas>
         </div>
 
         <button id="btn-dl-qr" class="w-full rounded-2xl bg-emerald-600 hover:bg-emerald-700 py-3.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition">
-          📥 Download QR Image
+          📥 Download PNG Image
         </button>
       </div>
     </div>
@@ -133,8 +171,11 @@
     <!-- TAB 3: Saved History -->
     <div id="tab-hist" class="hidden space-y-3">
       <div class="flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-        <span class="text-xs font-bold text-slate-800">Scan History</span>
-        <button id="btn-clear-hist" class="text-xs text-rose-600 font-semibold hover:underline">Clear All</button>
+        <span class="text-xs font-bold text-slate-800">Scan Ledger</span>
+        <div class="flex gap-2">
+          <button id="btn-export-hist-csv" class="text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg font-bold">CSV</button>
+          <button id="btn-clear-hist" class="text-xs text-rose-600 font-semibold hover:underline">Clear</button>
+        </div>
       </div>
       <div id="history-container" class="space-y-2"></div>
     </div>
@@ -152,8 +193,8 @@
         <p id="res-payload" class="text-xs sm:text-sm font-mono text-slate-800 break-all bg-white p-3 rounded-xl border border-slate-200/60"></p>
       </div>
       <div class="flex gap-2">
-        <a id="res-action-btn" href="#" target="_blank" class="flex-1 text-center py-3.5 text-xs font-bold rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20">Open Website</a>
-        <button id="btn-copy-res" class="flex-1 py-3.5 text-xs font-bold rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200/80 transition">Copy Text</button>
+        <a id="res-action-btn" href="#" target="_blank" class="flex-1 text-center py-3.5 text-xs font-bold rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20">Open Link</a>
+        <button id="btn-copy-res" class="flex-1 py-3.5 text-xs font-bold rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200/80 transition">Copy Payload</button>
       </div>
     </div>
   </div>
@@ -162,16 +203,16 @@
   <div id="guide-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
     <div class="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-100 text-center">
       <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 text-2xl mx-auto border border-emerald-200">
-        📱
+        ⚡
       </div>
       <h3 class="text-base font-bold text-slate-900">Welcome to ScanDesk</h3>
       <div class="text-left text-xs space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-slate-700">
-        <p><strong>1. Live Camera:</strong> Point camera at any QR code or retail barcode to decode in real-time.</p>
-        <p><strong>2. Photo Import:</strong> Select photos or screenshots from your gallery to scan saved codes.</p>
+        <p><strong>1. Live Camera:</strong> Point at any QR code or retail barcode to decode in real-time.</p>
+        <p><strong>2. Batch Scanning:</strong> Turn on Batch mode to scan multiple items sequentially into an exportable list.</p>
         <p><strong>3. QR Studio:</strong> Create your own Wi-Fi or Web QR codes and download as PNG.</p>
       </div>
       <button id="btn-close-guide" class="w-full py-3.5 rounded-2xl bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-600/20">
-        Got It, Let's Go
+        Get Started
       </button>
     </div>
   </div>
@@ -184,7 +225,7 @@
     </button>
     <button id="nav-gen" class="flex flex-col items-center gap-0.5 text-[11px] font-semibold text-slate-400">
       <span>✨</span>
-      <span>Generator</span>
+      <span>Studio</span>
     </button>
     <button id="nav-hist" class="flex flex-col items-center gap-0.5 text-[11px] font-semibold text-slate-400">
       <span>📜</span>
@@ -193,10 +234,12 @@
   </nav>
 
   <script>
-    // Pure JS Implementation of Camera, Gallery Downscaler, QR Generator, and Storage
     let currentFacing = 'environment';
     let localStream = null;
-    let scanHistory = JSON.parse(localStorage.getItem('scandesk_history') || '[]');
+    let isBatchMode = false;
+    let batchList = [];
+    let scanHistory = JSON.parse(localStorage.getItem('scandesk_history_v2') || '[]');
+    let activeColor = '#0f172a';
 
     function playBeep() {
       try {
@@ -243,7 +286,8 @@
         ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
 
         const now = Date.now();
-        if (now - lastScanTime > 1500 && window.jsQR) {
+        const interval = isBatchMode ? 1200 : 1500;
+        if (now - lastScanTime > interval && window.jsQR) {
           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
           if (code && code.data) {
@@ -257,48 +301,78 @@
 
     function handleResult(raw) {
       playBeep();
+      if ('vibrate' in navigator) { try { navigator.vibrate([40, 20, 40]); } catch(e){} }
       const isUrl = raw.startsWith('http://') || raw.startsWith('https://');
       const isWifi = raw.startsWith('WIFI:');
-      const item = { id: Date.now().toString(), raw: raw, time: new Date().toLocaleTimeString(), isUrl, isWifi };
+      const item = { id: Date.now().toString(), rawValue: raw, timestamp: Date.now(), isUrl, isWifi };
       scanHistory.unshift(item);
-      localStorage.setItem('scandesk_history', JSON.stringify(scanHistory));
+      localStorage.setItem('scandesk_history_v2', JSON.stringify(scanHistory));
       renderHistory();
 
-      // Show Result Modal
-      document.getElementById('res-payload').innerText = raw;
-      document.getElementById('res-badge').innerText = isUrl ? 'SAFE URL' : isWifi ? 'WI-FI' : 'TEXT';
-      const actBtn = document.getElementById('res-action-btn');
-      if (isUrl) {
-        actBtn.style.display = 'block';
-        actBtn.href = raw;
+      if (isBatchMode) {
+        batchList.push(item);
+        document.getElementById('batch-count-text').innerText = `${batchList.length} items collected`;
       } else {
-        actBtn.style.display = 'none';
+        document.getElementById('res-payload').innerText = raw;
+        document.getElementById('res-badge').innerText = isUrl ? 'SAFE URL' : isWifi ? 'WI-FI' : 'TEXT';
+        const actBtn = document.getElementById('res-action-btn');
+        if (isUrl) {
+          actBtn.style.display = 'block';
+          actBtn.href = raw;
+        } else {
+          actBtn.style.display = 'none';
+        }
+        document.getElementById('result-modal').classList.remove('hidden');
+        document.getElementById('result-modal').classList.add('flex');
       }
-      document.getElementById('result-modal').classList.remove('hidden');
-      document.getElementById('result-modal').classList.add('flex');
     }
 
     function renderHistory() {
       const container = document.getElementById('history-container');
       if (scanHistory.length === 0) {
-        container.innerHTML = '<div class="p-6 text-center text-xs text-slate-400 bg-white rounded-2xl border border-slate-200/80">No scan history yet.</div>';
+        container.innerHTML = '<div class="p-6 text-center text-xs text-slate-400 bg-white rounded-2xl border border-slate-200/80">No scan history recorded.</div>';
         return;
       }
       container.innerHTML = scanHistory.map(h => `
         <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-between shadow-xs">
           <div class="min-w-0 pr-2">
             <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">${h.isUrl ? 'URL' : h.isWifi ? 'Wi-Fi' : 'TEXT'}</span>
-            <p class="text-xs font-mono text-slate-800 truncate mt-1">${h.raw}</p>
+            <p class="text-xs font-mono text-slate-800 truncate mt-1">${h.rawValue}</p>
           </div>
-          <span class="text-[10px] text-slate-400 shrink-0">${h.time}</span>
+          <span class="text-[10px] text-slate-400 shrink-0">${new Date(h.timestamp).toLocaleTimeString()}</span>
         </div>
       `).join('');
     }
 
-    // Event Listeners
+    // Flip camera
     document.getElementById('btn-flip-cam').onclick = () => {
       currentFacing = currentFacing === 'environment' ? 'user' : 'environment';
       startCamera();
+    };
+
+    // Batch toggle
+    document.getElementById('btn-batch-toggle').onclick = () => {
+      isBatchMode = !isBatchMode;
+      const banner = document.getElementById('batch-banner');
+      const btn = document.getElementById('btn-batch-toggle');
+      if (isBatchMode) {
+        banner.classList.remove('hidden');
+        banner.classList.add('flex');
+        btn.className = 'rounded-full bg-emerald-600 px-2.5 py-1 text-xs text-white font-bold shadow-xs';
+      } else {
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
+        btn.className = 'rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs text-slate-200 font-bold';
+      }
+    };
+
+    document.getElementById('btn-export-batch').onclick = () => {
+      const csv = 'ID,Timestamp,Payload\n' + batchList.map(b => `"${b.id}","${new Date(b.timestamp).toISOString()}","${b.rawValue.replace(/"/g, '""')}"`).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'scandesk_batch.csv';
+      a.click();
     };
 
     document.getElementById('gallery-input').onchange = (e) => {
@@ -323,7 +397,7 @@
         if (code && code.data) {
           handleResult(code.data);
         } else {
-          alert('No clear QR code detected in this photo. Please try a clearer image.');
+          alert('Could not decode a QR code from this image. Please select a clearer photo.');
         }
       };
       img.src = URL.createObjectURL(file);
@@ -344,7 +418,7 @@
 
     document.getElementById('btn-copy-res').onclick = () => {
       navigator.clipboard.writeText(document.getElementById('res-payload').innerText);
-      alert('Copied to clipboard!');
+      alert('Copied payload to clipboard!');
     };
 
     // Guide Modal
@@ -372,33 +446,56 @@
     });
 
     // QR Generator
-    function updateQR() {
-      const isUrl = !document.getElementById('gen-url-form').classList.contains('hidden');
-      const text = isUrl 
-        ? document.getElementById('qr-input-url').value 
-        : `WIFI:T:WPA;S:${document.getElementById('qr-input-ssid').value};P:${document.getElementById('qr-input-pass').value};;`;
-      QRCode.toCanvas(document.getElementById('qr-result-canvas'), text, { width: 220, margin: 2 });
+    function getGenPayload() {
+      if (!document.getElementById('gen-url-form').classList.contains('hidden')) {
+        return document.getElementById('qr-input-url').value;
+      }
+      if (!document.getElementById('gen-wifi-form').classList.contains('hidden')) {
+        return `WIFI:T:WPA;S:${document.getElementById('qr-input-ssid').value};P:${document.getElementById('qr-input-pass').value};;`;
+      }
+      if (!document.getElementById('gen-vcard-form').classList.contains('hidden')) {
+        return `BEGIN:VCARD\nVERSION:3.0\nFN:${document.getElementById('qr-input-name').value}\nTEL:${document.getElementById('qr-input-phone').value}\nEND:VCARD`;
+      }
+      return document.getElementById('qr-input-text').value;
     }
 
-    document.getElementById('gen-mode-url').onclick = () => {
-      document.getElementById('gen-url-form').classList.remove('hidden');
-      document.getElementById('gen-wifi-form').classList.add('hidden');
-      document.getElementById('gen-mode-url').className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300';
-      document.getElementById('gen-mode-wifi').className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 border border-slate-200';
-      updateQR();
-    };
+    function updateQR() {
+      const text = getGenPayload();
+      QRCode.toCanvas(document.getElementById('qr-result-canvas'), text, {
+        width: 220,
+        margin: 2,
+        color: { dark: activeColor, light: '#ffffff' }
+      });
+    }
 
-    document.getElementById('gen-mode-wifi').onclick = () => {
-      document.getElementById('gen-wifi-form').classList.remove('hidden');
-      document.getElementById('gen-url-form').classList.add('hidden');
-      document.getElementById('gen-mode-wifi').className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300';
-      document.getElementById('gen-mode-url').className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 border border-slate-200';
-      updateQR();
-    };
+    const genModes = ['url', 'wifi', 'vcard', 'text'];
+    genModes.forEach(m => {
+      document.getElementById('gen-mode-' + m).onclick = () => {
+        genModes.forEach(other => {
+          document.getElementById('gen-' + other + '-form').classList.add('hidden');
+          document.getElementById('gen-mode-' + other).className = 'py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 border border-slate-200';
+        });
+        document.getElementById('gen-' + m + '-form').classList.remove('hidden');
+        document.getElementById('gen-mode-' + m).className = 'py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300';
+        updateQR();
+      };
+    });
+
+    document.querySelectorAll('#color-palette button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('#color-palette button').forEach(b => b.className = 'w-5 h-5 rounded-full');
+        btn.className = 'w-5 h-5 rounded-full border-2 border-emerald-500 scale-110';
+        activeColor = btn.dataset.color;
+        updateQR();
+      };
+    });
 
     document.getElementById('qr-input-url').oninput = updateQR;
     document.getElementById('qr-input-ssid').oninput = updateQR;
     document.getElementById('qr-input-pass').oninput = updateQR;
+    document.getElementById('qr-input-name').oninput = updateQR;
+    document.getElementById('qr-input-phone').oninput = updateQR;
+    document.getElementById('qr-input-text').oninput = updateQR;
 
     document.getElementById('btn-dl-qr').onclick = () => {
       const canvas = document.getElementById('qr-result-canvas');
@@ -408,21 +505,29 @@
       a.click();
     };
 
+    document.getElementById('btn-export-hist-csv').onclick = () => {
+      const csv = 'ID,Timestamp,Payload\n' + scanHistory.map(b => `"${b.id}","${new Date(b.timestamp).toISOString()}","${b.rawValue.replace(/"/g, '""')}"`).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'scandesk_history.csv';
+      a.click();
+    };
+
     document.getElementById('btn-clear-hist').onclick = () => {
-      if (confirm('Clear all scan history?')) {
+      if (confirm('Clear all saved scan history?')) {
         scanHistory = [];
-        localStorage.removeItem('scandesk_history');
+        localStorage.removeItem('scandesk_history_v2');
         renderHistory();
       }
     };
 
-    // Auto-init
+    // Init
     renderHistory();
     startCamera();
     if (!localStorage.getItem('scandesk_onboarded')) {
       document.getElementById('guide-modal').classList.remove('hidden');
       document.getElementById('guide-modal').classList.add('flex');
-      localStorage.setItem('scandesk_onboarded', 'true');
     }
   </script>
 </body>
