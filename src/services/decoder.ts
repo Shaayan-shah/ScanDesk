@@ -47,15 +47,31 @@ export class ScannerDecoder {
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
+          // Scale large mobile photos down to max 1000px for instant & accurate decoding
+          const maxDim = 1000;
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              h = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+
           const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth || img.width;
-          canvas.height = img.naturalHeight || img.height;
-          const ctx = canvas.getContext('2d');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
           if (!ctx) {
             resolve(null);
             return;
           }
-          ctx.drawImage(img, 0, 0);
+
+          ctx.drawImage(img, 0, 0, w, h);
           const result = this.decodeCanvas(canvas);
           resolve(result);
         };
