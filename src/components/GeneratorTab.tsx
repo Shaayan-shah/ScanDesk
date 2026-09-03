@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { QrCode, Download, Wifi, UserPlus, Link, FileText, Phone, Mail, ShieldCheck } from 'lucide-react';
+import { Download, Link, Wifi, User, Phone, FileText } from 'lucide-react';
 import QRCode from 'qrcode';
 
 type Template = 'url' | 'wifi' | 'vcard' | 'text' | 'phone';
@@ -9,8 +9,7 @@ export const GeneratorTab: React.FC = () => {
   const [payload, setPayload] = useState('https://github.com/Shaayan-shah/ScanDesk');
   const [qrDataUrl, setQrDataUrl] = useState('');
 
-  // Form states
-  const [wifi, setWifi] = useState({ ssid: 'Home_WiFi_5G', pass: 'Secret123', auth: 'WPA' });
+  const [wifi, setWifi] = useState({ ssid: 'Office_Guest', pass: 'Network2026', auth: 'WPA' });
   const [vcard, setVcard] = useState({ name: 'Shayan Shah', phone: '+923001234567', org: 'DecodeLabs' });
   const [phone, setPhone] = useState('+923001234567');
 
@@ -19,12 +18,12 @@ export const GeneratorTab: React.FC = () => {
     if (template === 'wifi') {
       text = `WIFI:T:${wifi.auth};S:${wifi.ssid};P:${wifi.pass};;`;
     } else if (template === 'vcard') {
-      text = `BEGIN:VCARD\nVERSION:3.0\nFN:${vcard.name}\nTEL:${vcard.phone}\nORG:${vcard.org}\nEND:VCARD`;
+      text = `BEGIN:VCARD\\nVERSION:3.0\\nFN:${vcard.name}\\nTEL:${vcard.phone}\\nORG:${vcard.org}\\nEND:VCARD`;
     } else if (template === 'phone') {
       text = `tel:${phone}`;
     }
 
-    QRCode.toDataURL(text, { width: 400, margin: 2, color: { dark: '#000000', light: '#ffffff' } })
+    QRCode.toDataURL(text, { width: 400, margin: 2, color: { dark: '#0f172a', light: '#ffffff' } })
       .then(setQrDataUrl)
       .catch(() => {});
   }, [template, payload, wifi, vcard, phone]);
@@ -45,7 +44,7 @@ export const GeneratorTab: React.FC = () => {
           {[
             { id: 'url', label: 'Link', icon: Link },
             { id: 'wifi', label: 'Wi-Fi', icon: Wifi },
-            { id: 'vcard', label: 'Contact', icon: UserPlus },
+            { id: 'vcard', label: 'Contact', icon: User },
             { id: 'text', label: 'Text', icon: FileText },
             { id: 'phone', label: 'Phone', icon: Phone },
           ].map((t) => {
@@ -55,8 +54,8 @@ export const GeneratorTab: React.FC = () => {
               <button
                 key={t.id}
                 onClick={() => setTemplate(t.id as Template)}
-                className={`flex flex-col items-center gap-1 p-2.5 rounded-2xl border text-xs font-semibold transition ${
-                  isSel ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-slate-900 border-slate-800 text-slate-400'
+                className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border text-xs font-semibold transition ${
+                  isSel ? 'bg-emerald-50 border-emerald-600 text-emerald-800 shadow-xs' : 'bg-white border-slate-200/80 text-slate-600 hover:bg-slate-50'
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -67,60 +66,60 @@ export const GeneratorTab: React.FC = () => {
         </div>
 
         {/* Inputs */}
-        <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
+        <div className="p-5 rounded-3xl bg-white border border-slate-200/80 space-y-3 shadow-xs">
           {template === 'url' && (
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Target Website URL</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Target Website URL</label>
               <input
                 type="url"
                 value={payload}
                 onChange={(e) => setPayload(e.target.value)}
-                className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 transition"
               />
             </div>
           )}
 
           {template === 'wifi' && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div>
-                <label className="text-xs text-slate-400 block mb-1">Network SSID</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Network Name (SSID)</label>
                 <input
                   type="text"
                   value={wifi.ssid}
                   onChange={(e) => setWifi({ ...wifi, ssid: e.target.value })}
-                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2 text-xs text-white"
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 transition"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 block mb-1">Password</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Password</label>
                 <input
                   type="text"
                   value={wifi.pass}
                   onChange={(e) => setWifi({ ...wifi, pass: e.target.value })}
-                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2 text-xs text-white"
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 transition"
                 />
               </div>
             </div>
           )}
 
           {template === 'vcard' && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div>
-                <label className="text-xs text-slate-400 block mb-1">Full Name</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Full Name</label>
                 <input
                   type="text"
                   value={vcard.name}
                   onChange={(e) => setVcard({ ...vcard, name: e.target.value })}
-                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2 text-xs text-white"
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 transition"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 block mb-1">Phone Number</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Phone Number</label>
                 <input
                   type="text"
                   value={vcard.phone}
                   onChange={(e) => setVcard({ ...vcard, phone: e.target.value })}
-                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2 text-xs text-white"
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 transition"
                 />
               </div>
             </div>
@@ -128,12 +127,24 @@ export const GeneratorTab: React.FC = () => {
 
           {template === 'text' && (
             <div>
-              <label className="text-xs text-slate-400 block mb-1">Raw Text</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Raw Message</label>
               <textarea
                 value={payload}
                 onChange={(e) => setPayload(e.target.value)}
                 rows={3}
-                className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 text-xs text-white"
+                className="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 transition"
+              />
+            </div>
+          )}
+
+          {template === 'phone' && (
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Phone Number</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 transition"
               />
             </div>
           )}
@@ -141,23 +152,19 @@ export const GeneratorTab: React.FC = () => {
       </div>
 
       {/* Right QR Preview */}
-      <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
-        <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-          <ShieldCheck className="h-3.5 w-3.5" />
-          <span>100% Offline Verified</span>
-        </div>
-
-        <div className="p-3 bg-white rounded-2xl shadow-inner">
+      <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-3xl bg-white border border-slate-200/80 space-y-4 shadow-xs">
+        <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 shadow-inner">
           {qrDataUrl && <img src={qrDataUrl} alt="QR Code" className="w-48 h-48 rounded-lg" />}
         </div>
 
         <button
           onClick={handleDownload}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition shadow-md"
+          className="w-full flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 py-3.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition"
         >
-          <Download className="h-4 w-4" /> Download QR PNG
+          <Download className="h-4 w-4" /> Download QR Image
         </button>
       </div>
     </div>
   );
 };
+

@@ -1,91 +1,97 @@
-import React from 'react';
-import { X, Sparkles, Wifi, UserPlus, Link, Tag } from 'lucide-react';
-import { ScanResult } from '../types';
-import { ContentParser } from '../services/parser';
-import { StorageService } from '../services/storage';
+import React, { useState } from 'react';
+import { Camera, Image, QrCode, ArrowRight, Check } from 'lucide-react';
 
-interface DemoModalProps {
+interface OnboardingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectSample: (result: ScanResult) => void;
 }
 
-export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectSample }) => {
+export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) => {
+  const [step, setStep] = useState(0);
+
   if (!isOpen) return null;
 
-  const samples = [
+  const slides = [
     {
-      title: 'Coffee Shop Guest Wi-Fi',
-      desc: 'WIFI:S:BrewCafe_5G;T:WPA;P:FreshRoast2026;;',
-      icon: Wifi,
-      category: 'Wi-Fi'
+      title: 'Real-Time Camera Scanner',
+      desc: 'Point your camera at any QR code or barcode to decode links, Wi-Fi networks, and contact cards in real-time.',
+      icon: Camera,
+      badge: 'Step 1 of 3',
+      color: 'from-emerald-500 to-teal-600'
     },
     {
-      title: 'Software Lead vCard Contact',
-      desc: 'BEGIN:VCARD\nVERSION:3.0\nFN:Shayan Shah\nTEL:+923001234567\nORG:DecodeLabs\nEND:VCARD',
-      icon: UserPlus,
-      category: 'Contact'
+      title: 'Gallery & Screenshot Import',
+      desc: 'Have a code saved in your photos? Select any image from your device gallery to decode it instantly without printing.',
+      icon: Image,
+      badge: 'Step 2 of 3',
+      color: 'from-blue-500 to-indigo-600'
     },
     {
-      title: 'Verified Portfolio Website',
-      desc: 'https://github.com/Shaayan-shah',
-      icon: Link,
-      category: 'Safe URL'
-    },
-    {
-      title: 'EAN-13 Retail Product Barcode',
-      desc: '9780134685991',
-      icon: Tag,
-      category: 'Product'
-    },
+      title: 'Instant QR Generator',
+      desc: 'Create custom QR codes for your Wi-Fi, personal contact card, website, or notes with 1-click image download.',
+      icon: QrCode,
+      badge: 'Step 3 of 3',
+      color: 'from-violet-500 to-purple-600'
+    }
   ];
 
-  const handlePick = (raw: string) => {
-    const parsed = ContentParser.parse(raw);
-    StorageService.saveScan(parsed);
-    onSelectSample(parsed);
-    onClose();
+  const current = slides[step];
+  const Icon = current.icon;
+
+  const handleNext = () => {
+    if (step < slides.length - 1) {
+      setStep(step + 1);
+    } else {
+      localStorage.setItem('scandesk_onboarded', 'true');
+      onClose();
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-      <div className="w-full max-w-md rounded-3xl bg-slate-900 border border-slate-800 p-6 space-y-4 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-cyan-400" />
-            <h3 className="text-sm font-bold text-white">Interactive Demo Samples</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+      <div className="w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100">
+        
+        {/* Top Progress & Badge */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+            {current.badge}
+          </span>
+          <div className="flex gap-1.5">
+            {slides.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  step === i ? 'w-6 bg-emerald-600' : 'w-2 bg-slate-200'
+                }`}
+              />
+            ))}
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">&times;</button>
         </div>
 
-        <p className="text-xs text-slate-400">
-          Tap any real-world sample below to test instant decoding and smart contextual actions:
-        </p>
-
-        <div className="space-y-2">
-          {samples.map((s, idx) => {
-            const Icon = s.icon;
-            return (
-              <button
-                key={idx}
-                onClick={() => handlePick(s.desc)}
-                className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 transition text-left group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white group-hover:text-cyan-300 transition">{s.title}</p>
-                    <span className="text-[10px] text-slate-500 uppercase">{s.category}</span>
-                  </div>
-                </div>
-                <span className="text-xs text-cyan-400 font-semibold">Test →</span>
-              </button>
-            );
-          })}
+        {/* Feature Visual Icon */}
+        <div className="flex justify-center py-4">
+          <div className={`flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br ${current.color} text-white shadow-lg shadow-emerald-500/10`}>
+            <Icon className="h-10 w-10 stroke-[1.8]" />
+          </div>
         </div>
+
+        {/* Text Details */}
+        <div className="text-center space-y-2">
+          <h3 className="text-lg font-bold text-slate-900">{current.title}</h3>
+          <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">{current.desc}</p>
+        </div>
+
+        {/* Action Button */}
+        <button
+          onClick={handleNext}
+          className="w-full flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 py-3.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition"
+        >
+          <span>{step === slides.length - 1 ? 'Get Started' : 'Next Step'}</span>
+          {step === slides.length - 1 ? <Check className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+        </button>
+
       </div>
     </div>
   );
 };
+
