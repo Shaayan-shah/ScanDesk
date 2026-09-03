@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Camera, RefreshCw, Upload, Flashlight, Layers, Download } from 'lucide-react';
+import { Camera, RefreshCw, Upload, Flashlight, Layers, Download, CheckCircle2, Sparkles, Scan, Crosshair } from 'lucide-react';
 import { ScanResult } from '../types';
 import { ContentParser } from '../services/parser';
 import { StorageService } from '../services/storage';
@@ -59,7 +59,7 @@ export const ScannerTab: React.FC<ScannerTabProps> = ({ onScanResult }) => {
         }
       } catch (err: any) {
         setCameraActive(false);
-        setErrorMsg('Camera access is not available. You can upload an image from your gallery below.');
+        setErrorMsg('Camera access is not available. Please pick an image from your device photos below.');
       }
     };
 
@@ -108,7 +108,7 @@ export const ScannerTab: React.FC<ScannerTabProps> = ({ onScanResult }) => {
   const triggerScanSuccess = (result: ScanResult) => {
     ScannerDecoder.playBeep();
     if ('vibrate' in navigator) {
-      try { navigator.vibrate([30, 20, 30]); } catch {}
+      try { navigator.vibrate([40, 25, 40]); } catch {}
     }
     StorageService.saveScan(result);
 
@@ -160,7 +160,7 @@ export const ScannerTab: React.FC<ScannerTabProps> = ({ onScanResult }) => {
     if (result) {
       triggerScanSuccess(result);
     } else {
-      alert('Could not read a code from this image. Please choose a well-lit photo.');
+      alert('Could not decode a QR code or barcode from this image. Please select a clearer photo.');
     }
     e.target.value = '';
   };
@@ -183,34 +183,48 @@ export const ScannerTab: React.FC<ScannerTabProps> = ({ onScanResult }) => {
     <div className="space-y-4 max-w-lg mx-auto">
       <canvas ref={canvasRef} className="hidden" />
 
-      {/* Viewfinder Card */}
-      <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-zinc-950 shadow-md border border-zinc-200/80 flex items-center justify-center">
+      {/* Viewfinder Main Stage */}
+      <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-950 shadow-2xl shadow-sky-500/10 border-2 border-sky-200/80 flex items-center justify-center transition-all duration-300">
         <video ref={videoRef} playsInline muted className="w-full h-full object-cover" />
 
-        {/* Framing Reticle */}
+        {/* High-Tech Optical Target Overlay */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-          <div className="relative w-52 h-52 rounded-2xl border border-white/20">
-            <div className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-lg" />
-            <div className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-lg" />
-            <div className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-white rounded-bl-lg" />
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-white rounded-br-lg" />
-            <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-white/80 to-transparent animate-laser" />
+          <div className="relative w-56 h-56 rounded-3xl border border-sky-400/40 shadow-[0_0_30px_rgba(56,189,248,0.25)] flex items-center justify-center">
+            
+            {/* 4 Corner Targeting Crosshairs */}
+            <div className="absolute -top-1 -left-1 w-7 h-7 border-t-4 border-l-4 border-sky-400 rounded-tl-xl drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+            <div className="absolute -top-1 -right-1 w-7 h-7 border-t-4 border-r-4 border-sky-400 rounded-tr-xl drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+            <div className="absolute -bottom-1 -left-1 w-7 h-7 border-b-4 border-l-4 border-sky-400 rounded-bl-xl drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+            <div className="absolute -bottom-1 -right-1 w-7 h-7 border-b-4 border-r-4 border-sky-400 rounded-br-xl drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+
+            {/* Central Target Reticle */}
+            <div className="w-6 h-6 rounded-full border border-sky-300/60 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping" />
+            </div>
+
+            {/* Animated Laser Beam */}
+            <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sky-400 to-transparent animate-laser shadow-[0_0_12px_#38bdf8]" />
           </div>
         </div>
 
-        {/* Viewfinder Controls */}
+        {/* Top Control Bar with Glassmorphic Pills */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-auto">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 rounded-full bg-slate-900/70 backdrop-blur-md px-3 py-1.5 text-xs font-semibold text-white border border-white/10 shadow-lg">
+              <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
+              <span>{cameraActive ? (batchMode ? `Batch (${batchItems.length})` : 'Scanning') : 'Standby'}</span>
+            </span>
+
             <button
               onClick={() => setBatchMode(!batchMode)}
-              className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-300 ${
                 batchMode
-                  ? 'bg-white text-zinc-900 shadow-sm'
-                  : 'bg-black/40 backdrop-blur-md text-white/90 hover:bg-black/60'
+                  ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/40 scale-105'
+                  : 'bg-slate-900/70 backdrop-blur-md text-slate-200 hover:text-white border border-white/10'
               }`}
             >
-              <Layers className="h-3 w-3" />
-              <span>{batchMode ? `Batch (${batchItems.length})` : 'Single'}</span>
+              <Layers className="h-3.5 w-3.5" />
+              <span>Batch</span>
             </button>
           </div>
 
@@ -218,33 +232,37 @@ export const ScannerTab: React.FC<ScannerTabProps> = ({ onScanResult }) => {
             {hasTorch && (
               <button
                 onClick={toggleTorch}
-                className={`rounded-full p-2 transition ${
-                  torchOn ? 'bg-white text-zinc-900' : 'bg-black/40 backdrop-blur-md text-white hover:bg-black/60'
+                className={`rounded-full p-2.5 transition-all duration-200 ${
+                  torchOn
+                    ? 'bg-amber-400 text-slate-950 shadow-lg shadow-amber-400/40 scale-110'
+                    : 'bg-slate-900/70 backdrop-blur-md text-white hover:text-sky-300 border border-white/10'
                 }`}
                 title="Toggle Torch"
               >
-                <Flashlight className="h-3.5 w-3.5" />
+                <Flashlight className="h-4 w-4" />
               </button>
             )}
 
             <button
               onClick={() => setFacing(facing === 'environment' ? 'user' : 'environment')}
-              className="rounded-full bg-black/40 backdrop-blur-md p-2 text-white hover:bg-black/60 transition"
-              title="Switch Camera"
+              className="rounded-full bg-slate-900/70 backdrop-blur-md p-2.5 text-white hover:text-sky-300 hover:rotate-180 transition-all duration-500 border border-white/10"
+              title="Flip Camera Lens"
             >
-              <RefreshCw className="h-3.5 w-3.5" />
+              <RefreshCw className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        {/* Zoom Selector */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full pointer-events-auto">
+        {/* Bottom Digital Zoom Selector */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-slate-900/70 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 shadow-lg pointer-events-auto">
           {[1, 2, 3].map((z) => (
             <button
               key={z}
               onClick={() => handleZoom(z)}
-              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full transition ${
-                zoomLevel === z ? 'bg-white text-zinc-900' : 'text-white/80 hover:text-white'
+              className={`text-xs font-bold px-2.5 py-0.5 rounded-full transition-all duration-200 ${
+                zoomLevel === z
+                  ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-xs scale-105'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               {z}x
@@ -253,55 +271,67 @@ export const ScannerTab: React.FC<ScannerTabProps> = ({ onScanResult }) => {
         </div>
 
         {errorMsg && (
-          <div className="absolute inset-0 bg-zinc-900/90 flex flex-col items-center justify-center p-6 text-center space-y-2">
-            <Camera className="h-8 w-8 text-zinc-400" />
-            <p className="text-xs text-zinc-200">{errorMsg}</p>
+          <div className="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center p-6 text-center space-y-3">
+            <div className="p-3 rounded-2xl bg-sky-500/20 text-sky-400">
+              <Camera className="h-8 w-8 animate-bounce" />
+            </div>
+            <p className="text-xs text-slate-200 max-w-xs">{errorMsg}</p>
           </div>
         )}
       </div>
 
       {/* Batch Mode Drawer Banner */}
       {batchMode && batchItems.length > 0 && (
-        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-100 border border-zinc-200 shadow-xs">
-          <span className="text-xs font-semibold text-zinc-800">
-            {batchItems.length} {batchItems.length === 1 ? 'code' : 'codes'} collected
-          </span>
+        <div className="flex items-center justify-between p-4 rounded-3xl bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200/80 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 text-white text-xs font-bold shadow-xs">
+              {batchItems.length}
+            </span>
+            <div>
+              <p className="text-xs font-bold text-sky-950">Batch Scan Active</p>
+              <p className="text-[11px] text-sky-700">{batchItems.length} items logged</p>
+            </div>
+          </div>
           <button
             onClick={exportBatchCsv}
-            className="flex items-center gap-1 text-xs bg-zinc-900 text-white px-3 py-1.5 rounded-xl font-medium shadow-xs hover:bg-zinc-800 transition"
+            className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white px-4 py-2 rounded-2xl font-bold shadow-md shadow-sky-500/25 hover:-translate-y-0.5 transition-all"
           >
-            <Download className="h-3 w-3" /> Export CSV
+            <Download className="h-3.5 w-3.5" /> Export CSV
           </button>
         </div>
       )}
 
-      {/* Photo Picker & Input */}
+      {/* Photo Picker & Manual Input Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <label className="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-zinc-200/80 hover:border-zinc-300 cursor-pointer transition shadow-xs">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-zinc-100 text-zinc-700">
-              <Upload className="h-4 w-4" />
+        {/* Photo Gallery Card */}
+        <label className="group flex items-center justify-between p-4 rounded-3xl bg-white border border-sky-100 hover:border-sky-300 cursor-pointer shadow-sm hover:shadow-md hover:shadow-sky-500/10 hover:-translate-y-0.5 transition-all duration-300">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-gradient-to-br from-sky-50 to-blue-50 text-sky-600 border border-sky-100 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+              <Upload className="h-4.5 w-4.5" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-zinc-900">Import Image</p>
-              <p className="text-[11px] text-zinc-500">Pick from device photos</p>
+              <p className="text-xs font-bold text-slate-900 group-hover:text-sky-600 transition-colors">Import Photo</p>
+              <p className="text-[11px] text-slate-500">Pick from gallery</p>
             </div>
           </div>
-          <span className="rounded-xl bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">Browse</span>
+          <span className="rounded-xl bg-sky-50 group-hover:bg-sky-500 group-hover:text-white px-3 py-1.5 text-xs font-bold text-sky-700 border border-sky-200/60 transition-all">
+            Select
+          </span>
           <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
         </label>
 
-        <form onSubmit={handleManualSubmit} className="flex items-center gap-1.5 p-2 rounded-2xl bg-white border border-zinc-200/80 shadow-xs">
+        {/* Text / Barcode Input Form */}
+        <form onSubmit={handleManualSubmit} className="flex items-center gap-2 p-2 rounded-3xl bg-white border border-sky-100 shadow-sm hover:border-sky-300 transition-all duration-300">
           <input
             type="text"
             value={manualInput}
             onChange={(e) => setManualInput(e.target.value)}
-            placeholder="Paste code or text..."
-            className="flex-1 rounded-xl bg-zinc-50 px-3 py-2 text-xs font-mono text-zinc-800 focus:outline-none focus:bg-white border border-transparent focus:border-zinc-300 transition"
+            placeholder="Paste code text..."
+            className="flex-1 rounded-2xl bg-sky-50/50 px-3.5 py-2.5 text-xs font-mono text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white border border-transparent focus:border-sky-400 transition"
           />
           <button
             type="submit"
-            className="rounded-xl bg-zinc-900 hover:bg-zinc-800 px-3.5 py-2 text-xs font-medium text-white transition"
+            className="rounded-2xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-sky-500/20 hover:scale-105 transition-all"
           >
             Decode
           </button>

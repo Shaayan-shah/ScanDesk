@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trash2, Star, Search, Download } from 'lucide-react';
+import { Trash2, Star, Search, Download, Sparkles } from 'lucide-react';
 import { ScanResult } from '../types';
 import { StorageService } from '../services/storage';
 
@@ -62,18 +62,18 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({ onSelectResult }) => {
   });
 
   return (
-    <div className="space-y-3.5 max-w-2xl mx-auto">
-      {/* Search & Action Bar */}
-      <div className="p-3 rounded-2xl bg-white border border-zinc-200/80 shadow-xs space-y-2.5">
+    <div className="space-y-4 max-w-2xl mx-auto">
+      {/* Search & Export Toolbar */}
+      <div className="p-4 rounded-3xl bg-white border border-sky-100 shadow-sm space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 flex-1 px-1">
-            <Search className="h-4 w-4 text-zinc-400" />
+          <div className="flex items-center gap-2 flex-1 px-2 py-1 bg-sky-50/50 rounded-2xl border border-sky-100">
+            <Search className="h-4 w-4 text-sky-500" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search scans..."
-              className="w-full bg-transparent text-xs text-zinc-800 focus:outline-none placeholder:text-zinc-400"
+              placeholder="Search scan ledger..."
+              className="w-full bg-transparent text-xs text-slate-800 focus:outline-none placeholder:text-slate-400"
             />
           </div>
 
@@ -82,11 +82,11 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({ onSelectResult }) => {
               <>
                 <button
                   onClick={exportHistoryCsv}
-                  className="flex items-center gap-1 text-[11px] font-medium text-zinc-700 bg-zinc-100 hover:bg-zinc-200/80 px-2.5 py-1 rounded-lg transition"
+                  className="flex items-center gap-1 text-[11px] font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 px-3 py-1.5 rounded-xl border border-sky-200/70 hover:-translate-y-0.5 transition-all shadow-xs"
                 >
-                  <Download className="h-3 w-3" /> Export
+                  <Download className="h-3 w-3 text-sky-500" /> Export CSV
                 </button>
-                <button onClick={handleClear} className="text-xs text-zinc-500 hover:text-zinc-900 px-1 font-medium">
+                <button onClick={handleClear} className="text-xs text-rose-500 hover:text-rose-700 px-2 font-bold">
                   Clear
                 </button>
               </>
@@ -97,7 +97,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({ onSelectResult }) => {
         {/* Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-xs">
           {[
-            { id: 'all', label: 'All' },
+            { id: 'all', label: 'All Scans' },
             { id: 'fav', label: 'Starred' },
             { id: 'url', label: 'Links' },
             { id: 'wifi', label: 'Wi-Fi' },
@@ -106,10 +106,10 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({ onSelectResult }) => {
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id as any)}
-              className={`px-3 py-1 rounded-xl font-medium text-[11px] transition ${
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-[11px] transition-all duration-200 ${
                 activeFilter === f.id
-                  ? 'bg-zinc-900 text-white shadow-xs'
-                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200/80'
+                  ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-xs scale-105'
+                  : 'bg-sky-50/70 text-slate-600 hover:bg-sky-100 hover:text-sky-700'
               }`}
             >
               {f.label}
@@ -118,36 +118,40 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({ onSelectResult }) => {
         </div>
       </div>
 
-      {/* History List */}
-      <div className="space-y-2">
+      {/* History Items Ledger */}
+      <div className="space-y-2.5">
         {filtered.length === 0 ? (
-          <div className="p-8 text-center rounded-2xl bg-white border border-zinc-200/80 text-zinc-400 text-xs shadow-xs">
-            No scans found.
+          <div className="p-8 text-center rounded-3xl bg-white border border-sky-100 text-slate-400 text-xs shadow-sm space-y-1">
+            <p className="font-semibold text-slate-600">No records found</p>
+            <p className="text-[11px] text-slate-400">Scanned QR codes will appear here in real time.</p>
           </div>
         ) : (
           filtered.map((item) => (
             <div
               key={item.id}
               onClick={() => onSelectResult(item)}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-zinc-200/80 hover:border-zinc-300 cursor-pointer transition shadow-xs group"
+              className="group flex items-center justify-between p-4 rounded-3xl bg-white border border-sky-100 hover:border-sky-300 cursor-pointer shadow-sm hover:shadow-md hover:shadow-sky-500/10 hover:-translate-y-0.5 transition-all duration-300"
             >
               <div className="min-w-0 pr-3 flex-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="text-[10px] font-semibold text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded-md uppercase">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-lg uppercase tracking-wider border border-sky-200/60">
                     {item.categoryTitle || item.contentType}
                   </span>
-                  <span className="text-[10px] text-zinc-400">{new Date(item.timestamp).toLocaleTimeString()}</span>
+                  <span className="text-[10px] text-slate-400">{new Date(item.timestamp).toLocaleTimeString()}</span>
                 </div>
-                <p className="text-xs font-mono text-zinc-800 truncate">{item.rawValue}</p>
+                <p className="text-xs font-mono text-slate-800 truncate group-hover:text-sky-700 transition-colors">
+                  {item.rawValue}
+                </p>
               </div>
 
-              <div className="flex items-center gap-1 shrink-0">
-                <button onClick={(e) => handleToggleStar(e, item.id)} className="text-zinc-300 hover:text-amber-500 p-1">
-                  <Star className={`h-4 w-4 ${item.isFavorite ? 'text-amber-500 fill-amber-500' : ''}`} />
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button onClick={(e) => handleToggleStar(e, item.id)} className="text-slate-300 hover:text-amber-500 p-1.5 transition-transform hover:scale-125">
+                  <Star className={`h-4 w-4 ${item.isFavorite ? 'text-amber-400 fill-amber-400' : ''}`} />
                 </button>
                 <button
                   onClick={(e) => handleDeleteItem(e, item.id)}
-                  className="text-zinc-300 hover:text-rose-600 p-1 opacity-0 group-hover:opacity-100 transition"
+                  className="text-slate-300 hover:text-rose-500 p-1.5 opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+                  title="Delete Item"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
