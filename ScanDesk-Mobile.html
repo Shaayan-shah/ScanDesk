@@ -6,6 +6,7 @@
   <title>ScanDesk Mobile Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <style>
     body { background-color: #030712; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
     @keyframes sweep { 0%, 100% { transform: translateY(0%); opacity: 0.9; } 50% { transform: translateY(220px); opacity: 0.3; } }
@@ -33,6 +34,9 @@
   <!-- Main Views Container -->
   <main class="flex-1 p-4 max-w-lg mx-auto w-full">
     
+    <!-- Hidden processing canvas -->
+    <canvas id="proc-canvas" class="hidden"></canvas>
+
     <!-- TAB 1: Live Camera Scanner -->
     <div id="tab-scan" class="space-y-4">
       <div class="relative w-full aspect-square rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl flex items-center justify-center">
@@ -172,6 +176,8 @@
   <script>
     let currentFacing = 'environment';
     let localHistory = JSON.parse(localStorage.getItem('scandesk_history_mobile') || '[]');
+    let lastScannedVal = null;
+    let lastScanTime = 0;
 
     const navScan = document.getElementById('nav-scan');
     const navGen = document.getElementById('nav-gen');
@@ -179,6 +185,8 @@
     const tabScan = document.getElementById('tab-scan');
     const tabGen = document.getElementById('tab-gen');
     const tabHist = document.getElementById('tab-hist');
+    const procCanvas = document.getElementById('proc-canvas');
+    const procCtx = procCanvas.getContext('2d', { willReadFrequently: true });
 
     function switchTab(active) {
       tabScan.classList.add('hidden');
@@ -207,7 +215,7 @@
     navGen.onclick = () => switchTab('gen');
     navHist.onclick = () => switchTab('hist');
 
-    // Camera loop
+    // Camera loop using pure jsQR
     const video = document.getElementById('video-preview');
     let videoStream = null;
 
@@ -215,7 +223,7 @@
       if (videoStream) videoStream.getTracks().forEach(t => t.stop());
       try {
         videoStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: currentFacing }
+          video: { facingMode: currentFacing, width: { ideal: 1280 }, height: { ideal: 720 } }
         });
         video.srcObject = videoStream;
         scanLoop();
@@ -224,16 +232,26 @@
       }
     }
 
-    async function scanLoop() {
-      if (video.readyState >= 2 && 'BarcodeDetector' in window) {
-        try {
-          const detector = new BarcodeDetector({ formats: ['qr_code', 'ean_13', 'upc_a', 'code_128'] });
-          const barcodes = await detector.detect(video);
-          if (barcodes.length > 0) {
-            handleResult(barcodes[0].rawValue);
-            return;
+    function scanLoop() {
+      if (video.readyState >= 2 && !tabScan.classList.contains('hidden')) {
+        if (procCanvas.width !== video.videoWidth || procCanvas.height !== video.videoHeight) {
+          procCanvas.width = video.videoWidth;
+          procCanvas.height = video.videoHeight;
+        }
+        procCtx.drawImage(video, 0, 0, procCanvas.width, procCanvas.height);
+        const imgData = procCtx.getImageData(0, 0, procCanvas.width, procCanvas.height);
+        
+        if (window.jsQR) {
+          const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+          if (code && code.data) {
+            const now = Date.now();
+            if (now - lastScanTime > 1500) {
+              lastScanTime = now;
+              handleResult(code.data);
+              return;
+            }
           }
-        } catch (e) {}
+        }
       }
       if (!tabScan.classList.contains('hidden')) {
         requestAnimationFrame(scanLoop);
@@ -281,17 +299,31 @@
       handleResult(val);
     };
 
-    // Photo input
-    document.getElementById('file-input').onchange = async (e) => {
+    // Photo input decoding using jsQR
+    document.getElementById('file-input').onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const bmp = await createImageBitmap(file);
-      if ('BarcodeDetector' in window) {
-        const detector = new BarcodeDetector({ formats: ['qr_code', 'ean_13', 'code_128'] });
-        const res = await detector.detect(bmp);
-        if (res.length > 0) handleResult(res[0].rawValue);
-        else alert('No QR or Barcode found in this photo.');
-      }
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const img = new Image();
+        img.onload = () => {
+          procCanvas.width = img.naturalWidth || img.width;
+          procCanvas.height = img.naturalHeight || img.height;
+          procCtx.drawImage(img, 0, 0);
+          const imgData = procCtx.getImageData(0, 0, procCanvas.width, procCanvas.height);
+          if (window.jsQR) {
+            const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+            if (code && code.data) {
+              handleResult(code.data);
+            } else {
+              alert('No QR Code found in this image.');
+            }
+          }
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
     };
 
     // QR Generator
